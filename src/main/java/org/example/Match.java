@@ -12,11 +12,16 @@ class Match {
 
     private Integer awayTeamScore = 0;
 
-    private LocalDateTime start = LocalDateTime.now();
+    private LocalDateTime start;
 
     public Match(String homeTeam, String awayTeam) {
+        this(homeTeam, awayTeam, LocalDateTime.now());
+    }
+
+    public Match(String homeTeam, String awayTeam, LocalDateTime start) {
         this.homeTeam = homeTeam;
         this.awayTeam = awayTeam;
+        this.start = start;
     }
 
     void setHomeTeamScore(Integer homeTeamScore) {
@@ -45,6 +50,10 @@ class Match {
 
     public LocalDateTime getStart() {
         return start;
+    }
+
+    public long getTotalScore() {
+        return homeTeamScore + awayTeamScore;
     }
 
     @Override

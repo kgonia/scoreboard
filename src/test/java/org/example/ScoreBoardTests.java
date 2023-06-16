@@ -4,14 +4,17 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
+import java.util.List;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.example.ScoreBoard.NEGATIVE_SCORES_ERROR_MESSAGE;
+import static org.example.ScoreBoard.NULL_VALUES_ERROR_MESSAGE;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 
-public class ScoreBoardTests {
+class ScoreBoardTests {
 
     String homeTeam = "home";
     String awayTeam = "away";
@@ -44,6 +47,18 @@ public class ScoreBoardTests {
     }
 
     @Test
+    void WhenNullAsTeamNameIsProvided_throwException() {
+        // given
+        ScoreBoard scoreBoard = new ScoreBoard();
+
+        // when .. then
+        assertThatThrownBy(() -> {
+            scoreBoard.addMatch(homeTeam, null);
+        }).isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining(NULL_VALUES_ERROR_MESSAGE);
+    }
+
+    @Test
     void WhenMatchIsRemoved_ongoingMatchesShouldDecrease() {
         // given
         ScoreBoard scoreBoard = new ScoreBoard();
@@ -63,6 +78,21 @@ public class ScoreBoardTests {
 
     @Test
     void WhenNonExistingMatchIsRemoved_nothingChanges() {
+        // given
+        ScoreBoard scoreBoard = new ScoreBoard();
+
+        int ongoingMatchesBeforeRemoval = scoreBoard.ongoingMatches();
+        // when
+        boolean result = scoreBoard.finishMatch(homeTeam, awayTeam);
+
+        // then match is successfully removed
+        assertFalse(result);
+        // ongoing matches is reduces and equal 0
+        assertThat(scoreBoard.ongoingMatches()).isEqualTo(ongoingMatchesBeforeRemoval).isEqualTo(0);
+    }
+
+    @Test
+    void WhenNullAsTeamNameIsProvidedToFinish_nothingChanges() {
         // given
         ScoreBoard scoreBoard = new ScoreBoard();
 
@@ -116,4 +146,78 @@ public class ScoreBoardTests {
         }).isInstanceOf(IllegalArgumentException.class)
                 .hasMessageContaining(NEGATIVE_SCORES_ERROR_MESSAGE);
     }
+
+    @Test
+    void whenScoresAreUpdated_TheyShouldBeUpdatedCorrectly() {
+        // given
+        ScoreBoard scoreBoard = new ScoreBoard();
+        scoreBoard.addMatch(homeTeam, awayTeam);
+
+        int homeScore = 2;
+        int awayScore = 3;
+
+        // when
+        scoreBoard.updateScore(homeTeam, awayTeam, homeScore, awayScore);
+
+        // then
+        assertThat(scoreBoard.ongoingMatches()).isEqualTo(1);
+
+        Match match = scoreBoard.getMatchesOrdered().get(0);
+
+        assertThat(match.getHomeTeamScore()).isEqualTo(homeScore);
+        assertThat(match.getAwayTeamScore()).isEqualTo(awayScore);
+    }
+
+    @Test
+    void whenMultipleMatchesAreAdded_TheyShouldBeOrderedByTotalScore() {
+        // given
+        ScoreBoard scoreBoard = new ScoreBoard();
+
+        String homeTeam2 = "home2";
+        String awayTeam2 = "away2";
+
+        scoreBoard.addMatch(homeTeam, awayTeam);
+        scoreBoard.addMatch(homeTeam2, awayTeam2);
+
+        int homeScore1 = 2;
+        int awayScore1 = 3;
+
+        int homeScore2 = 1;
+        int awayScore2 = 5;
+
+        scoreBoard.updateScore(homeTeam, awayTeam, homeScore1, awayScore1);
+        scoreBoard.updateScore(homeTeam2, awayTeam2, homeScore2, awayScore2);
+
+        // when
+        List<Match> orderedMatches = scoreBoard.getMatchesOrdered();
+
+        // then
+        assertThat(scoreBoard.ongoingMatches()).isEqualTo(2);
+
+        assertThat(orderedMatches.get(0).getTotalScore()).isGreaterThan(orderedMatches.get(1).getTotalScore());
+    }
+
+    @Test
+    public void matchesShouldBeSortedByTotalScoreAndTime() {
+        ScoreBoard scoreBoard = new ScoreBoard();
+
+        // Add matches to the scoreboard
+        scoreBoard.addMatch("home2", "away2");
+        scoreBoard.updateScore("home2", "away2", 2, 2); // Total score: 5
+
+        scoreBoard.addMatch("home3", "away3");
+        scoreBoard.updateScore("home3", "away3", 2, 2); // Total score: 4
+
+        scoreBoard.addMatch(homeTeam, awayTeam);
+        scoreBoard.updateScore(homeTeam, awayTeam, 3, 2); // Total score: 4
+
+        // Get the ordered matches
+        List<Match> matchesOrdered = scoreBoard.getMatchesOrdered();
+
+        // Assert the order of matches
+        assertThat(matchesOrdered.get(0)).isEqualTo(new Match(homeTeam, awayTeam)); // The match with the highest score comes first
+        assertThat(matchesOrdered.get(1)).isEqualTo(new Match("home2", "away2")); // Then the earlier added match with score 4
+        assertThat(matchesOrdered.get(2)).isEqualTo(new Match("home3", "away3")); // Then the most recently added match with score 4
+    }
+
 }
