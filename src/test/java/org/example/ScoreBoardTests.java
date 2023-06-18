@@ -52,9 +52,8 @@ class ScoreBoardTests {
         ScoreBoard scoreBoard = new ScoreBoard();
 
         // when .. then
-        assertThatThrownBy(() -> {
-            scoreBoard.addMatch(homeTeam, null);
-        }).isInstanceOf(IllegalArgumentException.class)
+        assertThatThrownBy(() -> scoreBoard.addMatch(homeTeam, null))
+                .isInstanceOf(IllegalArgumentException.class)
                 .hasMessageContaining(NULL_VALUES_ERROR_MESSAGE);
     }
 
@@ -92,26 +91,34 @@ class ScoreBoardTests {
     }
 
     @Test
-    void WhenNullAsTeamNameIsProvidedToFinish_nothingChanges() {
+    void WhenNullAsTeamNameIsProvidedToFinish_throwException() {
         // given
         ScoreBoard scoreBoard = new ScoreBoard();
 
-        int ongoingMatchesBeforeRemoval = scoreBoard.ongoingMatches();
-        // when
-        boolean result = scoreBoard.finishMatch(homeTeam, awayTeam);
-
-        // then match is successfully removed
-        assertFalse(result);
-        // ongoing matches is reduces and equal 0
-        assertThat(scoreBoard.ongoingMatches()).isEqualTo(ongoingMatchesBeforeRemoval).isEqualTo(0);
+        // when .. then
+        assertThatThrownBy(() -> scoreBoard.finishMatch(null, null))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining(NULL_VALUES_ERROR_MESSAGE);
     }
 
     @Test
-    void WhenNonExistingMatchIsUpdate_shouldReturnTrue() {
+    void WhenUpdateIsCalledForNonexistentMatch_NoUpdateOccurs() {
         // given
         ScoreBoard scoreBoard = new ScoreBoard();
 
         scoreBoard.addMatch(homeTeam, awayTeam);
+
+        // when
+        boolean result = scoreBoard.updateScore("homeTeam2", "awayTeam2", 0, 1);
+
+        // then
+        assertFalse(result);
+    }
+
+    @Test
+    void WhenMatchScoreIsUpdated_UpdatesAreReflected() {
+        // given
+        ScoreBoard scoreBoard = new ScoreBoard();
         scoreBoard.addMatch(homeTeam, awayTeam);
 
         // when
@@ -121,17 +128,20 @@ class ScoreBoardTests {
         assertTrue(result);
     }
 
-
     @Test
-    void WhenMatchIsUpdated_scoreIsUpdated() {
+    void WhenNullScoreIsProvidedToUpdate_throwException() {
         // given
         ScoreBoard scoreBoard = new ScoreBoard();
+        scoreBoard.addMatch(homeTeam, awayTeam);
 
-        // when
-        boolean result = scoreBoard.updateScore(homeTeam, awayTeam, 0, 1);
+        // when .. then
+        assertThatThrownBy(() -> scoreBoard.updateScore(homeTeam, awayTeam, null, 1))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining(ScoreBoard.NULL_SCORE_ERROR_MESSAGE);
 
-        // then
-        assertFalse(result);
+        assertThatThrownBy(() -> scoreBoard.updateScore(homeTeam, awayTeam, 1, null))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining(ScoreBoard.NULL_SCORE_ERROR_MESSAGE);
     }
 
     @ParameterizedTest
@@ -141,9 +151,8 @@ class ScoreBoardTests {
         ScoreBoard scoreBoard = new ScoreBoard();
 
         // when .. then
-        assertThatThrownBy(() -> {
-            scoreBoard.updateScore(homeTeam, awayTeam, homeTeamScore, awayTeamScore);
-        }).isInstanceOf(IllegalArgumentException.class)
+        assertThatThrownBy(() -> scoreBoard.updateScore(homeTeam, awayTeam, homeTeamScore, awayTeamScore))
+                .isInstanceOf(IllegalArgumentException.class)
                 .hasMessageContaining(NEGATIVE_SCORES_ERROR_MESSAGE);
     }
 
@@ -215,6 +224,7 @@ class ScoreBoardTests {
         List<Match> matchesOrdered = scoreBoard.getMatchesOrdered();
 
         // Assert the order of matches
+        assertThat(matchesOrdered).hasSize(3);
         assertThat(matchesOrdered.get(0)).isEqualTo(new Match(homeTeam, awayTeam)); // The match with the highest score comes first
         assertThat(matchesOrdered.get(1)).isEqualTo(new Match("home2", "away2")); // Then the earlier added match with score 4
         assertThat(matchesOrdered.get(2)).isEqualTo(new Match("home3", "away3")); // Then the most recently added match with score 4

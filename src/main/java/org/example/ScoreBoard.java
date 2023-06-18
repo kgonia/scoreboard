@@ -9,6 +9,7 @@ public class ScoreBoard {
 
     static final String NULL_VALUES_ERROR_MESSAGE = "null value isn't acceptable as team name";
     static final String NEGATIVE_SCORES_ERROR_MESSAGE = "scores can't be less than zero";
+    static final String NULL_SCORE_ERROR_MESSAGE = "Score cannot be null.";
 
     private final HashMap<Match, Match> matches = new HashMap<>();
 
@@ -27,10 +28,17 @@ public class ScoreBoard {
     }
 
     public boolean finishMatch(String homeTeam, String awayTeam) {
+        if(homeTeam == null || awayTeam == null){
+            throw new IllegalArgumentException(NULL_VALUES_ERROR_MESSAGE);
+        }
         return matches.remove(new Match(homeTeam, awayTeam))!=null;
     }
 
-    public boolean updateScore(String homeTeam, String awayTeam, int homeTeamScore, int awayTeamScore) {
+    public boolean updateScore(String homeTeam, String awayTeam, Integer homeTeamScore, Integer awayTeamScore) {
+        if(homeTeamScore == null || awayTeamScore == null){
+            throw new IllegalArgumentException(NULL_SCORE_ERROR_MESSAGE);
+        }
+
         if(homeTeamScore < 0 || awayTeamScore < 0){
             throw new IllegalArgumentException(NEGATIVE_SCORES_ERROR_MESSAGE);
         }
