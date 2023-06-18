@@ -25,7 +25,7 @@ class ScoreBoardTests {
     @DisplayName("adding match")
     class AddMatch {
         @Test
-        void WhenNewMatchIsAdded_ShouldReturnTrue() {
+        void whenNewMatchIsAdded_ShouldReturnTrue() {
             // given
             ScoreBoard scoreBoard = new ScoreBoard();
 
@@ -38,7 +38,7 @@ class ScoreBoardTests {
         }
 
         @Test
-        void WhenDuplicatedMatchIsAdded_nothingChanges() {
+        void whenDuplicatedMatchIsAdded_nothingChanges() {
             // given
             ScoreBoard scoreBoard = new ScoreBoard();
 
@@ -52,7 +52,7 @@ class ScoreBoardTests {
         }
 
         @Test
-        void WhenNullAsTeamNameIsProvided_throwException() {
+        void whenNullAsTeamNameIsProvided_throwException() {
             // given
             ScoreBoard scoreBoard = new ScoreBoard();
 
@@ -64,7 +64,7 @@ class ScoreBoardTests {
 
 
         @Test
-        void WhenUpdateIsCalledForNonexistentMatch_NoUpdateOccurs() {
+        void whenUpdateIsCalledForNonexistentMatch_NoUpdateOccurs() {
             // given
             ScoreBoard scoreBoard = new ScoreBoard();
 
@@ -83,7 +83,7 @@ class ScoreBoardTests {
     class FinishMatch {
 
         @Test
-        void WhenNonExistingMatchIsRemoved_nothingChanges() {
+        void whenNonExistingMatchIsRemoved_nothingChanges() {
             // given
             ScoreBoard scoreBoard = new ScoreBoard();
 
@@ -98,7 +98,7 @@ class ScoreBoardTests {
         }
 
         @Test
-        void WhenNullAsTeamNameIsProvidedToFinish_throwException() {
+        void whenNullAsTeamNameIsProvidedToFinish_throwException() {
             // given
             ScoreBoard scoreBoard = new ScoreBoard();
 
@@ -109,7 +109,7 @@ class ScoreBoardTests {
         }
 
         @Test
-        void WhenMatchIsRemoved_ongoingMatchesShouldDecrease() {
+        void whenMatchIsRemoved_ongoingMatchesShouldDecrease() {
             // given
             ScoreBoard scoreBoard = new ScoreBoard();
 
@@ -132,7 +132,7 @@ class ScoreBoardTests {
     class UpdateMatchScore {
 
         @Test
-        void WhenMatchScoreIsUpdated_UpdatesAreReflected() {
+        void whenMatchScoreIsUpdated_UpdatesAreReflected() {
             // given
             ScoreBoard scoreBoard = new ScoreBoard();
             scoreBoard.addMatch(homeTeam, awayTeam);
@@ -145,7 +145,7 @@ class ScoreBoardTests {
         }
 
         @Test
-        void WhenNullScoreIsProvidedToUpdate_throwException() {
+        void whenNullScoreIsProvidedToUpdate_throwException() {
             // given
             ScoreBoard scoreBoard = new ScoreBoard();
             scoreBoard.addMatch(homeTeam, awayTeam);
@@ -162,7 +162,7 @@ class ScoreBoardTests {
 
         @ParameterizedTest
         @CsvSource({"-1,1", "3,-2", "-4,-3"})
-        void WhenScoreIsLessThanZero_throwException(int homeTeamScore, int awayTeamScore) {
+        void whenScoreIsLessThanZero_throwException(int homeTeamScore, int awayTeamScore) {
             // given
             ScoreBoard scoreBoard = new ScoreBoard();
 
@@ -223,7 +223,7 @@ class ScoreBoardTests {
         }
 
         @Test
-        public void matchesShouldBeSortedByTotalScoreAndTime() {
+        public void whenMultipleMatchesAreAdded_TheyShouldBeOrderedByTotalScoreAndStartTime() {
             ScoreBoard scoreBoard = new ScoreBoard();
 
             // Add matches to the scoreboard

@@ -1,5 +1,7 @@
 package org.example;
 
+import java.time.Clock;
+import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
@@ -13,7 +15,9 @@ public class ScoreBoard {
 
     private final HashMap<Match, Match> matches = new HashMap<>();
 
-    private final Comparator<Match> matchComparator = new MatchComparator().reversed();
+    private final Comparator<Match> matchComparator = Comparator.comparingLong(Match::getTotalScore)
+            .reversed()
+            .thenComparing(Match::getStart);
 
     public boolean addMatch(String homeTeam, String awayTeam){
         if(homeTeam == null || awayTeam == null){
