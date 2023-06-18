@@ -2,7 +2,7 @@ package org.example;
 
 import java.time.LocalDateTime;
 
-class Match {
+public class Match {
 
     private String homeTeam;
 
@@ -14,11 +14,11 @@ class Match {
 
     private LocalDateTime start;
 
-    public Match(String homeTeam, String awayTeam) {
+    Match(String homeTeam, String awayTeam) {
         this(homeTeam, awayTeam, LocalDateTime.now());
     }
 
-    public Match(String homeTeam, String awayTeam, LocalDateTime start) {
+    Match(String homeTeam, String awayTeam, LocalDateTime start) {
         this.homeTeam = homeTeam;
         this.awayTeam = awayTeam;
         this.start = start;
