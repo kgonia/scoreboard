@@ -5,13 +5,13 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.example.ScoreBoard.NEGATIVE_SCORES_ERROR_MESSAGE;
-import static org.example.ScoreBoard.NULL_VALUES_ERROR_MESSAGE;
+import static org.example.ScoreBoard.*;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -60,6 +60,27 @@ class ScoreBoardTests {
             assertThatThrownBy(() -> scoreBoard.addMatch(homeTeam, null))
                     .isInstanceOf(IllegalArgumentException.class)
                     .hasMessageContaining(NULL_VALUES_ERROR_MESSAGE);
+
+            assertThatThrownBy(() -> scoreBoard.addMatch(null, awayTeam))
+                    .isInstanceOf(IllegalArgumentException.class)
+                    .hasMessageContaining(NULL_VALUES_ERROR_MESSAGE);
+        }
+
+        @ParameterizedTest
+        @ValueSource(strings = {" ", ""})
+        void whenEmptyStringAsTeamNameIsProvided_throwException(String teamName) {
+            // given
+            ScoreBoard scoreBoard = new ScoreBoard();
+
+            // when .. then
+            assertThatThrownBy(() -> scoreBoard.addMatch(homeTeam, teamName))
+                    .isInstanceOf(IllegalArgumentException.class)
+                    .hasMessageContaining(EMPTY_VALUES_ERROR_MESSAGE);
+
+            // when .. then
+            assertThatThrownBy(() -> scoreBoard.addMatch(teamName, awayTeam))
+                    .isInstanceOf(IllegalArgumentException.class)
+                    .hasMessageContaining(EMPTY_VALUES_ERROR_MESSAGE);
         }
 
 
