@@ -56,6 +56,16 @@ public class Match {
         return homeTeamScore + awayTeamScore;
     }
 
+    /**
+     * Determines whether or not two matches are equal.
+     *
+     * <p>Two {@link Match} instances are considered equal if the instances are the same or
+     * if they have the same home and away teams. The comparison is case-sensitive.</p>
+     *
+     * @param o The object to compare this {@link Match} against.
+     * @return true if the given object represents a {@link Match} equivalent to this match, false otherwise.
+     * @see #hashCode()
+     */
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
