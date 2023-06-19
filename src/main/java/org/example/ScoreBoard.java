@@ -1,5 +1,7 @@
 package org.example;
 
+import java.time.Clock;
+import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
@@ -16,9 +18,18 @@ public class ScoreBoard {
     static final String NULL_SCORE_ERROR_MESSAGE = "Score cannot be null.";
     static final String EMPTY_VALUES_ERROR_MESSAGE = "Empty string is not acceptable as a team name";
     private final HashMap<Match, Match> matches = new HashMap<>();
+    private final Clock clock;
     private final Comparator<Match> matchComparator = Comparator.comparingLong(Match::getTotalScore)
             .reversed()
-            .thenComparing(Match::getStart);
+            .thenComparing(Match::getStart, Comparator.reverseOrder());
+
+    public ScoreBoard() {
+        this(Clock.systemDefaultZone());
+    }
+
+    public ScoreBoard(Clock clock) {
+        this.clock = clock;
+    }
 
     /**
      * Adds a new match to the scoreboard.
@@ -35,7 +46,7 @@ public class ScoreBoard {
         if(homeTeam.trim().isEmpty() || awayTeam.trim().isEmpty()){
             throw new IllegalArgumentException(EMPTY_VALUES_ERROR_MESSAGE);
         }
-        Match match = new Match(homeTeam, awayTeam);
+        Match match = new Match(homeTeam, awayTeam, LocalDateTime.now(clock));
         return matches.putIfAbsent(match, match)==null;
     }
 

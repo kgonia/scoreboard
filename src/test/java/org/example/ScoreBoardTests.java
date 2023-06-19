@@ -6,7 +6,10 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.ValueSource;
+import org.mockito.Mockito;
 
+import java.time.Clock;
+import java.time.Instant;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -14,6 +17,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.example.ScoreBoard.*;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.when;
 
 
 class ScoreBoardTests {
@@ -245,8 +249,15 @@ class ScoreBoardTests {
 
         @Test
         public void whenMultipleMatchesAreAdded_TheyShouldBeOrderedByTotalScoreAndStartTime() {
-            ScoreBoard scoreBoard = new ScoreBoard();
+            // Create a spy clock
+            Clock clock = Mockito.spy(Clock.systemDefaultZone());
 
+            // Spy on the clock's instant() method to return specific instants
+            when(clock.instant()).thenReturn(Instant.parse("2023-06-20T10:00:00Z"),
+                    Instant.parse("2023-06-20T10:10:00Z"),
+                    Instant.parse("2023-06-20T10:20:00Z"));
+
+            ScoreBoard scoreBoard = new ScoreBoard(clock);
             // Add matches to the scoreboard
             scoreBoard.addMatch("home2", "away2");
             scoreBoard.updateScore("home2", "away2", 2, 2); // Total score: 5
@@ -263,8 +274,8 @@ class ScoreBoardTests {
             // Assert the order of matches
             assertThat(matchesOrdered).hasSize(3);
             assertThat(matchesOrdered.get(0)).isEqualTo(new Match(homeTeam, awayTeam)); // The match with the highest score comes first
-            assertThat(matchesOrdered.get(1)).isEqualTo(new Match("home2", "away2")); // Then the earlier added match with score 4
-            assertThat(matchesOrdered.get(2)).isEqualTo(new Match("home3", "away3")); // Then the most recently added match with score 4
+            assertThat(matchesOrdered.get(1)).isEqualTo(new Match("home3", "away3")); // Then the most recently added match with score 4
+            assertThat(matchesOrdered.get(2)).isEqualTo(new Match("home2", "away2")); // Then the earlier added match with score 4
         }
     }
 
